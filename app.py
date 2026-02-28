@@ -69,15 +69,16 @@ pose_map = metadata.get('pose_image_mapping', {})
 target_map = metadata.get('target_area_mapping', {})
 
 # --- DATA LOADING ---
+# --- DATA LOADING ---
 @st.cache_data
 def load_data():
-    u_path = r"C:\Users\ragha\OneDrive\Desktop\yoga recommendation\Kaggle Health & Lifestyle Dataset\health_lifestyle_dataset.csv"
-    y_path = r"C:\Users\ragha\OneDrive\Desktop\yoga recommendation\Kaggle Yoga Poses Recommendation\Yoga Data.xlsx"
+    # REMOVE the C:\ paths. Just use the filename.
+    u_path = "health_lifestyle_dataset.csv"
+    y_path = "Yoga Data.xlsx"
     
     df_u = pd.read_csv(u_path)
     df_y = pd.read_excel(y_path)
     
-    # Clean and combine tags for NLP recommendation
     text_cols = ['Benefits', 'Targeted Mental Problems', 'Targeted Physical Problems']
     for col in text_cols:
         df_y[col] = df_y[col].astype(str).replace('nan', '')
@@ -85,16 +86,12 @@ def load_data():
     
     return df_u, df_y
 
-df_user, df_yoga = load_data()
-
-# --- NLP ENGINE ---
-tfidf = TfidfVectorizer(stop_words='english')
-tfidf_matrix = tfidf.fit_transform(df_yoga['tags'])
-
 # --- HELPER FUNCTIONS ---
 def get_image(asana_name):
-    base_path = r"C:\Users\ragha\OneDrive\Desktop\yoga recommendation\Kaggle Yoga Pose Classification"
+    # Change the base_path to your GitHub folder structure
+    base_path = "Kaggle Yoga Pose Classification" 
     search_term = pose_map.get(asana_name, asana_name)
+    # ... rest of the function stays same ...
     try:
         all_folders = [f for f in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, f))]
         matches = difflib.get_close_matches(search_term, all_folders, n=1, cutoff=0.3)
@@ -218,4 +215,5 @@ if st.session_state.current_user:
             st.info(message)
 else:
     st.info("👈 Please enter a User ID or create a profile in the sidebar.")
+
 
