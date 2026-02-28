@@ -8,8 +8,33 @@ from fpdf import FPDF
 import numpy as np
 import cv2
 from yoga_utils import YogaCoach
+import streamlit as st
+import os
+import requests
 
+# --- AUTO-DOWNLOAD LARGE MODEL FROM DRIVE ---
+MODEL_PATH = "disease_model.pkl"
+# Your specific File ID from the link you provided
+GOOGLE_DRIVE_ID = "16KrLnRvQfezXUk0zPi1wxage8F1erSk4"
+DOWNLOAD_URL = f"https://drive.google.com/uc?export=download&id={GOOGLE_DRIVE_ID}"
 # --- APP CONFIG & INITIALIZATION ---
+
+
+
+@st.cache_resource
+def download_model():
+    if not os.path.exists(MODEL_PATH):
+        with st.spinner("Downloading AI Model from Cloud... Please wait."):
+            response = requests.get(DOWNLOAD_URL, stream=True)
+            if response.status_code == 200:
+                with open(MODEL_PATH, "wb") as f:
+                    for chunk in response.iter_content(chunk_size=8192):
+                        f.write(chunk)
+                st.success("Model Downloaded Successfully!")
+            else:
+                st.error("Failed to download model from Google Drive. Check link permissions!")
+
+download_model() # Run the downloader
 st.set_page_config(page_title="AI Yoga Guru", layout="wide", page_icon="🧘")
 
 # Initialize the AI Coach from our utils file
@@ -193,3 +218,4 @@ if st.session_state.current_user:
             st.info(message)
 else:
     st.info("👈 Please enter a User ID or create a profile in the sidebar.")
+
