@@ -1,0 +1,10 @@
+streamlit
+pandas
+plotly
+fpdf
+scikit-learn
+joblib
+openpyxl
+opencv-python-headless
+mediapipe==0.10.14
+requests
